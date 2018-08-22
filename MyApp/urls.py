@@ -3,6 +3,6 @@ from django.contrib import admin
 from MyApp import views
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^idealweight/', views.ideal_weight)
+    url(r'^admin-my-app/', admin.site.urls),
+    url(r'^ideal-weight/', views.ideal_weight)
 ]

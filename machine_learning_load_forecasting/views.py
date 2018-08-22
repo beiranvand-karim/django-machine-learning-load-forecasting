@@ -2,6 +2,11 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from django.http import JsonResponse
+from .models import Load
+from django.core.serializers import serialize
+import json
+import logging
+
 
 
 @api_view(["GET"])
@@ -2014,7 +2019,19 @@ def ideal_weight(request):
                21.3,
                0]
 
+    for p in p_total:
+        logging.error(p)
+        x = Load(power=p)
+        x.save()
+
+    for j in json.loads(serialize('json', Load.objects.all())):
+        logging.error(j['fields']['power'])
+
     try:
-        return JsonResponse('test', safe=False)
+        return JsonResponse(json.loads(serialize('json', Load.objects.all())), safe=False)
     except ValueError as e:
         return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
+
+
+# database load_forecasting
+# role: karim passwd: karim852654
