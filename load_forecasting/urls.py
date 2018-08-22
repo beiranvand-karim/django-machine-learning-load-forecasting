@@ -4,6 +4,6 @@ from django.conf.urls import url, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^test/', include('machine_learning_load_forecasting.urls')),
-    url(r'^karim/', include('MyApp.urlls'))
+    url(r'^data/', include('machine_learning_load_forecasting.urls')),
+    url(r'^karim/', include('MyApp.urls'))
 ]
