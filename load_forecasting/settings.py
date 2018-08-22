@@ -26,6 +26,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'machine_learning_load_forecasting.apps.MachineLearningLoadForecastingConfig',
+    'rest_framework',
+    'MyApp.apps.MyappConfig'
 ]
 
 MIDDLEWARE = [
