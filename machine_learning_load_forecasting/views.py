@@ -8,9 +8,23 @@ import json
 import logging
 
 
+@api_view(["GET"])
+def list_data(request):
+
+    # for j in json.loads(serialize('json', Load.objects.all())):
+    #     logging.error(j['fields']['power'])
+
+    try:
+        return JsonResponse(json.loads(serialize('json', Load.objects.all())), safe=False)
+    except ValueError as e:
+        return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
+
+
+# database load_forecasting
+# role: karim passwd: karim852654
 
 @api_view(["GET"])
-def ideal_weight(request):
+def insert_data(request):
     p_total = [22.4,
                32.8,
                30.6,
@@ -2024,14 +2038,7 @@ def ideal_weight(request):
         x = Load(power=p)
         x.save()
 
-    for j in json.loads(serialize('json', Load.objects.all())):
-        logging.error(j['fields']['power'])
-
     try:
-        return JsonResponse(json.loads(serialize('json', Load.objects.all())), safe=False)
+        return JsonResponse('data inserted into table', safe=False)
     except ValueError as e:
         return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
-
-
-# database load_forecasting
-# role: karim passwd: karim852654
