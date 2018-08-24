@@ -67,8 +67,12 @@ WSGI_APPLICATION = 'load_forecasting.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'load_forecasting',
+        'USER': 'karim',
+        'PASSWORD': 'karim852654',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
 
@@ -111,5 +115,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-FILE_UPLOAD_HANDLERS = ("django_excel.ExcelMemoryFileUploadHandler",
-                        "django_excel.TemporaryExcelFileUploadHandler")
+# FILE_UPLOAD_HANDLERS = ("django_excel.ExcelMemoryFileUploadHandler",
+#                         "django_excel.TemporaryExcelFileUploadHandler")
