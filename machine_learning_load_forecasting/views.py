@@ -5,13 +5,10 @@ from django.http import JsonResponse
 from .models import Load
 from django.core.serializers import serialize
 import json
-import logging
 
 
 @api_view(["GET"])
 def list_data(request):
-    # for j in json.loads(serialize('json', Load.objects.all())):
-    #     logging.error(j['fields']['power'])
 
     try:
         return JsonResponse(json.loads(serialize('json', Load.objects.all())), safe=False)
@@ -19,11 +16,9 @@ def list_data(request):
         return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
 
 
-# database load_forecasting
-# role:karim passwd:karim852654
-
 @api_view(["GET"])
 def insert_data(request):
+
     p_total = [22.4,
                32.8,
                30.6,
@@ -6055,17 +6050,10 @@ def insert_data(request):
 
     Load.objects.all().delete()
 
-    # for p in p_total:
-    #     logging.error(p)
-    #     x = Load(power=p)
-    #     x.save()
-
     for x in range(len(p_total)):
         y = Load(power=p_total[x], date=date[x], time=time[x])
         y.save()
 
-    logging.error(len(date))
-    logging.error(len(p_total))
     try:
         return JsonResponse('data inserted into table', safe=False)
     except ValueError as e:
