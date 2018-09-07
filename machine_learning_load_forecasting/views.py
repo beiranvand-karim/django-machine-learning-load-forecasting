@@ -5,11 +5,55 @@ from django.http import JsonResponse
 from .models import Load
 from django.core.serializers import serialize
 import json
+import logging
+from sklearn.datasets import load_iris
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
+
+
+@api_view(["GET"])
+def numpy(request):
+    iris = load_iris()
+    # iris.data.tolist()
+    # iris.data.shape
+    # iris.feature_names
+    # iris.target_names
+    try:
+        return JsonResponse(iris.target_names.tolist(), safe=False)
+    except ValueError as e:
+        return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
+
+@api_view(["GET"])
+def sklearn(request):
+    iris = load_iris()
+    print(iris.data)
+    print(iris.feature_names)
+    print(iris.target)
+    print(iris.target_names)
+    print(iris.data.shape)
+    X = iris.data
+    y = iris.target
+    knn = KNeighborsClassifier(n_neighbors=1)
+    print(knn)
+    knn.fit(X, y)
+    print(knn.predict([3, 5, 4, 2]))
+    X_new = [[3, 5, 4, 2], [5, 4, 3, 2]]
+    print(knn.predict(X_new))
+    logreg = LogisticRegression()
+    logreg.fit(X, y)
+    print(logreg.predict(X_new))
+
+    print(iris.data[0])
+    try:
+        return JsonResponse('data', safe=False)
+    except ValueError as e:
+        return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["GET"])
 def list_data(request):
-
+    iris = load_iris()
+    logging.error(iris)
     try:
         return JsonResponse(json.loads(serialize('json', Load.objects.all())), safe=False)
     except ValueError as e:
@@ -18,7 +62,6 @@ def list_data(request):
 
 @api_view(["GET"])
 def insert_data(request):
-
     p_total = [22.4,
                32.8,
                30.6,
