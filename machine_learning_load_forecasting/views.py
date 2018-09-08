@@ -9,6 +9,46 @@ import logging
 from sklearn.datasets import load_iris
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn import metrics
+from sklearn.cross_validation import train_test_split
+
+
+@api_view(['GET'])
+def logistic_regression_train_test(request):
+    iris = load_iris()
+    x = iris.data
+    y = iris.target
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.4, random_state=4)
+    log_reg = LogisticRegression()
+    log_reg.fit(x_train, y_train)
+    y_prediction = log_reg.predict(x_test)
+    try:
+        return JsonResponse({
+            'observations': x_train.tolist(),
+            'predict': y_prediction.tolist(),
+            'accuracy_score': metrics.accuracy_score(y_test, y_prediction)
+        }, safe=False)
+    except ValueError as e:
+        return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def knn_train_test(request):
+    iris = load_iris()
+    x = iris.data
+    y = iris.target
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.4, random_state=4)
+    k_neighbors = KNeighborsClassifier(n_neighbors=10)
+    k_neighbors.fit(x_train, y_train)
+    y_prediction = k_neighbors.predict(x_test)
+    try:
+        return JsonResponse({
+            'observations': x_train.tolist(),
+            'predict': y_prediction.tolist(),
+            'accuracy_score': metrics.accuracy_score(y_test, y_prediction)
+        }, safe=False)
+    except ValueError as e:
+        return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
@@ -16,13 +56,14 @@ def logistic_regression(request):
     iris = load_iris()
     x = iris.data
     y = iris.target
-    x_new = [[3, 5, 4, 2], [5, 4, 3, 2]]
     log_reg = LogisticRegression()
     log_reg.fit(x, y)
+    y_prediction = log_reg.predict(x)
     try:
         return JsonResponse({
-            'observations': x_new,
-            'predict': log_reg.predict(x_new).tolist()
+            'observations': x.tolist(),
+            'predict': y_prediction.tolist(),
+            'accuracy_score': metrics.accuracy_score(y, y_prediction)
         }, safe=False)
     except ValueError as e:
         return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
@@ -52,11 +93,13 @@ def knn(request):
     y = iris.target
     k_neighbors = KNeighborsClassifier(n_neighbors=1)
     k_neighbors.fit(x, y)
-    x_new = [[3, 5, 4, 2], [5, 4, 3, 2]]
+    y_prediction = k_neighbors.predict(x)
+
     try:
         return JsonResponse({
-            'observations': x_new,
-            'predict': k_neighbors.predict(x_new).tolist()
+            'observations': x.tolist(),
+            'predict': y_prediction.tolist(),
+            'accuracy_score': metrics.accuracy_score(y, y_prediction)
         }, safe=False)
     except ValueError as e:
         return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
