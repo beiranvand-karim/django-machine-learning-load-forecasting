@@ -11,41 +11,53 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
 
 
-@api_view(["GET"])
-def numpy(request):
+@api_view(['GET'])
+def logistic_regression(request):
     iris = load_iris()
-    # iris.data.tolist()
-    # iris.data.shape
-    # iris.feature_names
-    # iris.target_names
+    x = iris.data
+    y = iris.target
+    x_new = [[3, 5, 4, 2], [5, 4, 3, 2]]
+    log_reg = LogisticRegression()
+    log_reg.fit(x, y)
     try:
-        return JsonResponse(iris.target_names.tolist(), safe=False)
+        return JsonResponse({
+            'observations': x_new,
+            'predict': log_reg.predict(x_new).tolist()
+        }, safe=False)
     except ValueError as e:
         return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
 
-@api_view(["GET"])
-def sklearn(request):
-    iris = load_iris()
-    print(iris.data)
-    print(iris.feature_names)
-    print(iris.target)
-    print(iris.target_names)
-    print(iris.data.shape)
-    X = iris.data
-    y = iris.target
-    knn = KNeighborsClassifier(n_neighbors=1)
-    print(knn)
-    knn.fit(X, y)
-    print(knn.predict([3, 5, 4, 2]))
-    X_new = [[3, 5, 4, 2], [5, 4, 3, 2]]
-    print(knn.predict(X_new))
-    logreg = LogisticRegression()
-    logreg.fit(X, y)
-    print(logreg.predict(X_new))
 
-    print(iris.data[0])
+@api_view(["GET"])
+def iris_data(request):
+    iris = load_iris()
+    dic = {
+        'data': iris.data.tolist(),
+        'target_names': iris.target_names.tolist(),
+        'data_shape': iris.data.shape,
+        'target_shape': iris.target.shape,
+        'feature_names': iris.feature_names,
+        'target': iris.target.tolist()
+    }
     try:
-        return JsonResponse('data', safe=False)
+        return JsonResponse(dic, safe=False)
+    except ValueError as e:
+        return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+def knn(request):
+    iris = load_iris()
+    x = iris.data
+    y = iris.target
+    k_neighbors = KNeighborsClassifier(n_neighbors=1)
+    k_neighbors.fit(x, y)
+    x_new = [[3, 5, 4, 2], [5, 4, 3, 2]]
+    try:
+        return JsonResponse({
+            'observations': x_new,
+            'predict': k_neighbors.predict(x_new).tolist()
+        }, safe=False)
     except ValueError as e:
         return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
 
@@ -2069,7 +2081,6 @@ def insert_data(request):
                22.2,
                21.3,
                ]
-
     date = [
         '92/8/13',
         '92/8/13',
@@ -4078,7 +4089,6 @@ def insert_data(request):
         '92/8/20',
         '92/8/20',
     ]
-
     time = [
         '10:05',
         '10:45',
@@ -6090,9 +6100,7 @@ def insert_data(request):
         '9:55',
         '10:15',
     ]
-
     Load.objects.all().delete()
-
     for x in range(len(p_total)):
         y = Load(power=p_total[x], date=date[x], time=time[x])
         y.save()
