@@ -12,6 +12,47 @@ from sklearn.linear_model import LogisticRegression
 from sklearn import metrics
 from sklearn.cross_validation import train_test_split
 import pandas as pd
+import numpy as np
+
+
+@api_view(['GET'])
+def knn_load_forecasting(request):
+    total_power_list = list(Load.objects.values_list('power', flat=True))
+    date = Load.objects.values_list('date', flat=True)
+    time = Load.objects.values_list('time', flat=True)
+
+    data_list = []
+    target_list = []
+    for i in range(len(total_power_list) - 4):
+        data_list.append([total_power_list[i], total_power_list[i+1], total_power_list[i+2], total_power_list[i+3]])
+
+    for i in range(4, len(total_power_list)):
+        target_list.append(total_power_list[i])
+
+    data = np.asarray(data_list)
+    target = np.asarray(target_list)
+
+    x_train, x_test, y_train, y_test = train_test_split(data, target, test_size=0.4, random_state=4)
+
+    # k_neighbors = KNeighborsClassifier(n_neighbors=1)
+    # k_neighbors.fit(x_train, y_train)
+    # y_prediction = k_neighbors.predict(x_test)
+
+    try:
+        return JsonResponse({
+            'total_power': total_power_list,
+            'date': list(date),
+            'time': list(time),
+            'shaped_data': data_list,
+            'target': target_list,
+            'x_train': x_train.tolist(),
+            'x_test': x_test.tolist(),
+            'y_train': y_train.tolist(),
+            'y_test': y_test.tolist(),
+            # 'accuracy_score': metrics.accuracy_score(y_test, y_prediction)
+        }, safe=False)
+    except ValueError as e:
+        return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
