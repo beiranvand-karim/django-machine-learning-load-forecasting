@@ -11,6 +11,45 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn import metrics
 from sklearn.cross_validation import train_test_split
+import pandas as pd
+
+
+@api_view(['GET'])
+def pandas_read_excel(request):
+    records = pd.read_excel('assets/records.xlsx')
+    date = records.values.T.tolist()[1]
+    date.pop(0)
+    date.pop(0)
+    date.pop(date.__len__() - 1)
+    time = records.values.T.tolist()[2]
+    time.pop(0)
+    time.pop(0)
+    time.pop(time.__len__() - 1)
+    total_power = records.values.T.tolist()[35]
+    total_power.pop(0)
+    total_power.pop(0)
+    total_power.pop(total_power.__len__() - 1)
+    try:
+        return JsonResponse({
+            'date': date,
+            'time': time,
+            'total_power': total_power
+        }, safe=False)
+    except ValueError as e:
+        return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def statistical_learning(request):
+    data = pd.read_csv('assets/Advertising.csv')
+    print(data.head())
+    try:
+        return JsonResponse({
+            'values': data.values.tolist(),
+            'shape': data.shape
+        }, safe=False)
+    except ValueError as e:
+        return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
