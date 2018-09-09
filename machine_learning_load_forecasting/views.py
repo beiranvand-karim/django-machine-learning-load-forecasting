@@ -15,7 +15,7 @@ import pandas as pd
 
 
 @api_view(['GET'])
-def pandas_read_excel(request):
+def pandas_read_excel_insert_in_database(request):
     records = pd.read_excel('assets/records.xlsx')
     date = records.values.T.tolist()[1]
     date.pop(0)
@@ -29,12 +29,14 @@ def pandas_read_excel(request):
     total_power.pop(0)
     total_power.pop(0)
     total_power.pop(total_power.__len__() - 1)
+
+    Load.objects.all().delete()
+    for x in range(len(total_power)):
+        y = Load(power=total_power[x], date=date[x], time=time[x])
+        y.save()
+
     try:
-        return JsonResponse({
-            'date': date,
-            'time': time,
-            'total_power': total_power
-        }, safe=False)
+        return JsonResponse('data inserted into database.', safe=False)
     except ValueError as e:
         return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
 
